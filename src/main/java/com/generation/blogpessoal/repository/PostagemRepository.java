@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.generation.blogpessoal.model.Postagem;
 
+
+
 public interface PostagemRepository extends JpaRepository<Postagem, Long>{
 	//A interface JPARepository sempre recebe 2 parametros
 	// A entidade que vai ser mapeada (no nosso caso é a classe postagem)
