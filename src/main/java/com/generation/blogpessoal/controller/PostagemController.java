@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 import jakarta.validation.Valid;
 
@@ -61,6 +62,14 @@ public class PostagemController {
 	// que fazer todo o código SQL;
 	private PostagemRepository postagemRepository;
 
+	
+	@Autowired
+	private TemaRepository temaRepository;
+	/*
+	 * Fazendo a injeção da dependência tema repository,para que no momento que seja
+	 * cadastrado uma nova postagem,também seja verificado se aquele tema existe
+	 */
+	
 	@GetMapping
 	// Informando que o método GetAll abaixo irá retornar uma requisição GET
 	public ResponseEntity<List<Postagem>> getAll() {
@@ -140,15 +149,18 @@ public class PostagemController {
 		// RequestBody Postagem postagem : recebe o Objeto do tipo Postagem, que foi
 		// enviado no Corpo da Requisição (Request Body), no formato JSON e
 		// insere no parâmetro postagem do Método post.
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
-		// HTTP Status CREATED🡪201 se o Objeto foi persistido no Banco de dados.
-		// O postagemRepository.save esta usando um método que foi puxado da interface
-		// JPARepository
-
+		if(temaRepository.existsById(postagem.getTema().getId())) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
+			// HTTP Status CREATED🡪201 se o Objeto foi persistido no Banco de dados.
+			// O postagemRepository.save esta usando um método que foi puxado da interface
+			// JPARepository
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "TEMA NAO EXISTE",null);
+		
 	}
 	
 	
+	/* METODO DE ATUALIZAR QUANDO AINDA NÃO ESTAVAMOS REALIZANDO A VERIFICAÇÃO DA EXISTENCIA DO TEMA DAQUELA POSTAGEM
 	@PutMapping
 	// Eu vou atualizar uma postagem já existente
 	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) {
@@ -169,6 +181,26 @@ public class PostagemController {
 		// se não existir a postagem com o id informado,ele cai no erro 404(not found)
 
 	}
+	
+	*/
+	
+	@PutMapping
+	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem ){
+		
+		if(postagemRepository.existsById(postagem.getId())) {
+			if(temaRepository.existsById(postagem.getTema().getId())){
+				return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
+			}
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"TEMA NAO EXISTE",null);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		
+	}
+	
+	
+	
+	
+	
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	// Eu estou falando que caso a requisição aconteça corretamente,ele retorna um
