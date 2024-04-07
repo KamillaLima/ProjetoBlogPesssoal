@@ -23,6 +23,7 @@ public class Tema {
 	private Long id;
 	
 	@NotNull(message="O atributo descrição é obrigatório")
+	
 	private String descricao;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tema", cascade = CascadeType.REMOVE)
