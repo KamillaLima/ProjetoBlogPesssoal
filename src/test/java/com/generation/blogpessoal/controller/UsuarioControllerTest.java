@@ -37,6 +37,7 @@ public class UsuarioControllerTest {
 	/*
 	 * foi injetado (@Autowired), um objeto da Classe TestRestTemplate para enviar
 	 * as requisições para a nossa aplicação.
+	 * Ela meio que substitui o insomnia
 	 */
 
 	@Autowired
@@ -54,6 +55,7 @@ public class UsuarioControllerTest {
 	 */
 
 	@BeforeAll
+	//Significa que primeiro será executado esse teste!!
 	void start() {
 		usuarioRepository.deleteAll();
 		usuarioService.cadastrarUsuario(new Usuario(0L, "root", "root@root.com", "rootroot", " "));
